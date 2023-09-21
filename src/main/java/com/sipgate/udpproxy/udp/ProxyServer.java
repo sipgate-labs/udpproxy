@@ -40,8 +40,11 @@ public class ProxyServer implements Runnable {
 
 				// Create dialog if not exists and listen for traffic from proxy target
 				final var dialogKey = getDialogKey(fromClient);
-				final var dialog = dialogs.computeIfAbsent(dialogKey, key -> Dialog.create(serverSocket, bufferSize, fromClient));
-				executorService.submit(dialog);
+				final var dialog = dialogs.computeIfAbsent(dialogKey, key -> {
+					final var newDialog = Dialog.create(serverSocket, bufferSize, fromClient);
+					executorService.submit(newDialog);
+					return newDialog;
+				});
 
 				// Lookup target and forward packet to proxy target
 				final var target = targetResolver.resolveTarget(fromClient);
