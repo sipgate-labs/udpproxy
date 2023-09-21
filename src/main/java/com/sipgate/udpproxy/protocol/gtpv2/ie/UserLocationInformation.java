@@ -19,15 +19,15 @@ public class UserLocationInformation extends InformationElement {
 
 	private final UliFlags flags;
 
-	// Ordered the way it shoud be parsed according to the flags if more than one identity is present at the same time
-	private Optional<Cgi> cgi = Optional.empty();
-	private Optional<Sai> sai = Optional.empty();
-	private Optional<Rai> rai = Optional.empty();
-	private Optional<Tai> tai = Optional.empty();
-	private Optional<Ecgi> ecgi = Optional.empty();
-	private Optional<Lai> lai = Optional.empty();
-	private Optional<MacroEnbId> macroEnbId = Optional.empty();
-	private Optional<ExtendedMacroEnbId> extendedMacroEnbId = Optional.empty();
+	// Ordered the way it should be parsed according to the flags if more than one identity is present at the same time
+	private Cgi cgi;
+	private Sai sai;
+	private Rai rai;
+	private Tai tai;
+	private Ecgi ecgi;
+	private Lai lai;
+	private MacroEnbId macroEnbId;
+	private ExtendedMacroEnbId extendedMacroEnbId;
 	private byte[] payload;
 
 	UserLocationInformation(final byte type, final byte spare, final byte instance, final byte[] payload) {
@@ -45,7 +45,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isCgi()) {
 				final byte[] cgiBytes = new byte[7];
 				System.arraycopy(payload, currentOffset, cgiBytes, 0, cgiBytes.length);
-				cgi = Optional.of(new Cgi(cgiBytes));
+				cgi = new Cgi(cgiBytes);
 				currentOffset += cgiBytes.length;
 				flagsToParse.setCgi(false);
 				continue;
@@ -54,7 +54,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isSai()) {
 				final byte[] saiBytes = new byte[7];
 				System.arraycopy(payload, currentOffset, saiBytes, 0, saiBytes.length);
-				sai = Optional.of(new Sai(saiBytes));
+				sai = new Sai(saiBytes);
 				currentOffset += saiBytes.length;
 				flagsToParse.setSai(false);
 				continue;
@@ -63,7 +63,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isRai()) {
 				final byte[] raiBytes = new byte[7];
 				System.arraycopy(payload, currentOffset, raiBytes, 0, raiBytes.length);
-				rai = Optional.of(new Rai(raiBytes));
+				rai = new Rai(raiBytes);
 				currentOffset += raiBytes.length;
 				flagsToParse.setRai(false);
 				continue;
@@ -72,7 +72,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isTai()) {
 				final byte[] taiBytes = new byte[5];
 				System.arraycopy(payload, currentOffset, taiBytes, 0, taiBytes.length);
-				tai = Optional.of(new Tai(taiBytes));
+				tai = new Tai(taiBytes);
 				currentOffset += taiBytes.length;
 				flagsToParse.setTai(false);
 				continue;
@@ -81,7 +81,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isEcgi()) {
 				final byte[] ecgiBytes = new byte[7];
 				System.arraycopy(payload, currentOffset, ecgiBytes, 0, ecgiBytes.length);
-				ecgi = Optional.of(new Ecgi(ecgiBytes));
+				ecgi = new Ecgi(ecgiBytes);
 				currentOffset += ecgiBytes.length;
 				flagsToParse.setEcgi(false);
 				continue;
@@ -90,7 +90,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isLai()) {
 				final byte[] laiBytes = new byte[5];
 				System.arraycopy(payload, currentOffset, laiBytes, 0, laiBytes.length);
-				lai = Optional.of(new Lai(laiBytes));
+				lai = new Lai(laiBytes);
 				currentOffset += laiBytes.length;
 				flagsToParse.setLai(false);
 				continue;
@@ -99,7 +99,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isMacroEnbIdPresent()) {
 				final byte[] macroEnbIdBytes = new byte[6];
 				System.arraycopy(payload, currentOffset, macroEnbIdBytes, 0, macroEnbIdBytes.length);
-				macroEnbId = Optional.of(new MacroEnbId(macroEnbIdBytes));
+				macroEnbId = new MacroEnbId(macroEnbIdBytes);
 				currentOffset += macroEnbIdBytes.length;
 				flagsToParse.setMacroEnbIdPresent(false);
 				continue;
@@ -108,7 +108,7 @@ public class UserLocationInformation extends InformationElement {
 			if (flagsToParse.isExtendedMacroEnbIdPresent()) {
 				final byte[] extendedMacroEnbIdBytes = new byte[6];
 				System.arraycopy(payload, currentOffset, extendedMacroEnbIdBytes, 0, extendedMacroEnbIdBytes.length);
-				extendedMacroEnbId = Optional.of(new ExtendedMacroEnbId(extendedMacroEnbIdBytes));
+				extendedMacroEnbId = new ExtendedMacroEnbId(extendedMacroEnbIdBytes);
 				currentOffset += extendedMacroEnbIdBytes.length;
 				flagsToParse.setExtendedMacroEnbId(false);
 			}
@@ -122,35 +122,35 @@ public class UserLocationInformation extends InformationElement {
 	}
 
 	public Optional<Cgi> getCgi() {
-		return cgi;
+		return Optional.ofNullable(cgi);
 	}
 
 	public Optional<Sai> getSai() {
-		return sai;
+		return Optional.ofNullable(sai);
 	}
 
 	public Optional<Rai> getRai() {
-		return rai;
+		return Optional.ofNullable(rai);
 	}
 
 	public Optional<Tai> getTai() {
-		return tai;
+		return Optional.ofNullable(tai);
 	}
 
 	public Optional<Ecgi> getEcgi() {
-		return ecgi;
+		return Optional.ofNullable(ecgi);
 	}
 
 	public Optional<Lai> getLai() {
-		return lai;
+		return Optional.ofNullable(lai);
 	}
 
 	public Optional<MacroEnbId> getMacroEnbId() {
-		return macroEnbId;
+		return Optional.ofNullable(macroEnbId);
 	}
 
 	public Optional<ExtendedMacroEnbId> getExtendedMacroEnbId() {
-		return extendedMacroEnbId;
+		return Optional.ofNullable(extendedMacroEnbId);
 	}
 
 	public byte[] getPayload() {
@@ -175,7 +175,7 @@ public class UserLocationInformation extends InformationElement {
 	/**
 	 * User Location Information Flags
 	 */
-	public class UliFlags {
+	public static class UliFlags {
 
 		private byte flags;
 
@@ -291,6 +291,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the raw bytes of the location information.
+		 *
 		 * @return The raw bytes
 		 */
 		public byte[] getBytes() {
@@ -299,6 +300,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Sets the raw bytes of the location information.
+		 *
 		 * @param bytes The raw bytes
 		 * @return The location information itself
 		 */
@@ -309,6 +311,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Mobile Country Code (MCC) of the location information.
+		 *
 		 * @return The MCC
 		 */
 		public int getMcc() {
@@ -317,6 +320,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Mobile Network Code (MNC) of the location information.
+		 *
 		 * @return The MNC
 		 */
 		public int getMnc() {
@@ -334,6 +338,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Cell Global Identifier (CGI) of the location information.
+		 *
 		 * @return The CGI
 		 */
 		public int getCgi() {
@@ -361,6 +366,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Service Area Identifier (SAI) of the location information.
+		 *
 		 * @return The SAI
 		 */
 		public int getSai() {
@@ -388,11 +394,13 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Routing Area Identifier (RAI) of the location information.
+		 *
 		 * @return The RAI
 		 */
 		public int getRai() {
 			return BitHelper.int16ToInt32(getBytes()[5], getBytes()[6]);
 		}
+
 		public String toString() {
 			return "Rai{" +
 					"mcc=" + getMcc() +
@@ -414,6 +422,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Tracking Area Identifier (TAI) of the location information.
+		 *
 		 * @return The TAI
 		 */
 		public int getTai() {
@@ -439,6 +448,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the E-UTRAN Cell Identifier (ECI) of the location information.
+		 *
 		 * @return The ECI
 		 */
 		public int getEci() {
@@ -465,6 +475,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Location Area Cdentifier (LAC) of the location information.
+		 *
 		 * @return The LAC
 		 */
 		public int getLac() {
@@ -484,6 +495,7 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Macro eNodeB ID of the macro eNodeB ID.
+		 *
 		 * @return The Macro eNodeB ID
 		 */
 		public int getMacroEnbId() {
@@ -511,7 +523,6 @@ public class UserLocationInformation extends InformationElement {
 		}
 
 
-
 		public boolean isSMeNBFlagSet() {
 			return BitHelper.isBitSet(getBytes()[3], 8);
 		}
@@ -523,21 +534,20 @@ public class UserLocationInformation extends InformationElement {
 
 		/**
 		 * Returns the Extended Macro eNodeB ID of the extended macro eNodeB ID.
+		 *
 		 * @return The Extended Macro eNodeB ID
 		 */
 		public int getMacroEnbId() {
 			// if the sMeNB flag is set, the ID is 21 bits long, starting at bit 5 of the 4th byte and extends
 			// over the 5th and 6th byte
 			if (isSMeNBFlagSet()) {
-				final int mask = 0b00011111;
-				final byte partialByteThree = (byte) ((getBytes()[3] & mask) << 3);
+				final byte partialByteThree = (byte) BitHelper.toInt(getBytes()[3], 1, 5);
 				return BitHelper.int24ToInt32(partialByteThree, getBytes()[4], getBytes()[5]);
 			}
 
 			// if the sNeNB flag is not set, the ID is 18 bits long, starting at bit 2 of the 4th byte and extend
 			// over the 5th and 6th byte
-			final int mask = 0b00000011;
-			final byte partialByteThree = (byte) ((getBytes()[3] & mask) << 5);
+			final byte partialByteThree = (byte) BitHelper.toInt(getBytes()[3], 1, 2);
 			return BitHelper.int24ToInt32(partialByteThree, getBytes()[4], getBytes()[5]);
 		}
 	}
