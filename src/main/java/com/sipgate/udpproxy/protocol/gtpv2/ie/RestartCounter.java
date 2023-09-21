@@ -1,5 +1,7 @@
 package com.sipgate.udpproxy.protocol.gtpv2.ie;
 
+import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.BitHelper;
+
 public class RestartCounter extends InformationElement {
 
 	RestartCounter(final byte type, final byte spare, final byte instance, final byte[] payload) {
@@ -14,6 +16,6 @@ public class RestartCounter extends InformationElement {
 	}
 
 	public int getRestartCounter() {
-		return (payload[0] & 0xff);
+		return BitHelper.toInt(payload[0]);
 	}
 }

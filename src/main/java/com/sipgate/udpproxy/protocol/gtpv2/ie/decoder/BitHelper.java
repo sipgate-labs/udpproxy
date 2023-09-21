@@ -83,6 +83,25 @@ public class BitHelper {
 	}
 
 	/**
+	 * Converts a byte to an integer that is between lowestBit and highestBit.
+	 * @param b the byte to convert
+	 * @param lowestBit the lowest bit to convert (1-8 inclusive)
+	 * @param highestBit the highest bit to convert (1-8 inclusive)
+	 * @return The integer
+	 */
+	public static int toInt(final byte b, final int lowestBit, final int highestBit) {
+		byte mask = 0b00000000;
+		for (int i = highestBit; i >= lowestBit; i--) {
+			mask = setBit(mask, i);
+		}
+		return (b & mask) >>> lowestBit - 1;
+	}
+
+	public static int toInt(final byte b) {
+		return toInt(b, 1, 8);
+	}
+
+	/**
 	 * Converts a 16 bit integer to an 32 bit integer.
 	 *
 	 * @param fourthOctet  The fourth octet of the final integer

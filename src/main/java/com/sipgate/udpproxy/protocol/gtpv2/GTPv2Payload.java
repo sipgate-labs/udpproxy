@@ -33,10 +33,10 @@ public class GTPv2Payload {
 	private List<InformationElement> informationElements;
 
 
-	private GTPv2Payload(byte[] payload) {
+	private GTPv2Payload(final byte[] payload) {
 		this.payload = payload;
 
-		this.version = (payload[0] & 0b11100000) >>> 5;
+		this.version = BitHelper.toInt(payload[0], 6, 8);
 		this.piggybackingFlagSet = BitHelper.isBitSet(payload[0], 5);
 		this.teidFlagSet = BitHelper.isBitSet(payload[0], 4);
 		this.messagePriorityFlagSet = BitHelper.isBitSet(payload[0], 3);
