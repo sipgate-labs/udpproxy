@@ -6,6 +6,16 @@ import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.BitHelper;
 import java.util.List;
 
 
+/**
+ * GTPv2 UDP payload. Represents Header and all Information Elements.
+ * <p>
+ *
+ * <a href="https://www.etsi.org/deliver/etsi_ts/129200_129299/129274/17.08.00_60/ts_129274v170800p.pdf">
+ * For Header, see ETSI TS 129 274 V17.8.0 (2023-04) - Section 5.1 (Page 24)
+ * </a>
+ *
+ * @author Lennart Rosam <rosam@sipgate.de>
+ */
 public class GTPv2Payload {
 
 	private final byte[] payload;
