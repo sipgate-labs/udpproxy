@@ -1,7 +1,7 @@
 package com.sipgate.udpproxy.udp;
 
 import com.sipgate.udpproxy.udp.payload.PacketRewriter;
-import com.sipgate.udpproxy.udp.payload.Protocol;
+import com.sipgate.udpproxy.udp.payload.PayloadProtocol;
 import com.sipgate.udpproxy.udp.payload.sip.SipRewriter;
 
 import java.io.IOException;
@@ -38,13 +38,13 @@ public class Dialog implements Runnable {
 		}
 	}
 
-	public static Dialog create(final DatagramSocket proxySource, final int bufferSize, final DatagramPacket clientPacket, final Protocol protocol) {
+	public static Dialog create(final DatagramSocket proxySource, final int bufferSize, final DatagramPacket clientPacket, final PayloadProtocol payloadProtocol) {
 		final Supplier<PacketRewriter>  rewriter = () -> {
-			switch (protocol) {
+			switch (payloadProtocol) {
 				case SIP:
 					return new SipRewriter();
 				default:
-					throw new IllegalArgumentException("Unsupported protocol: " + protocol);
+					throw new IllegalArgumentException("Unsupported protocol: " + payloadProtocol);
 			}
 		};
 		try {

@@ -1,6 +1,6 @@
 package com.sipgate.udpproxy;
 
-import com.sipgate.udpproxy.udp.payload.Protocol;
+import com.sipgate.udpproxy.udp.payload.PayloadProtocol;
 import com.sipgate.udpproxy.udp.ProxyServer;
 import com.sipgate.udpproxy.udp.ServerFactory;
 import picocli.CommandLine.Command;
@@ -28,11 +28,11 @@ public class UdpProxyCommand implements Callable<Integer> {
 	private String listenIp;
 
 	@Option(names = {"-t", "--type"}, description = "The protocol to proxy", defaultValue = "SIP")
-	private Protocol protocol;
+	private PayloadProtocol payloadProtocol;
 
 	@Override
 	public Integer call() {
-		final Optional<ProxyServer> maybeServer = ServerFactory.createServer(listenIp, port, iface, protocol);
+		final Optional<ProxyServer> maybeServer = ServerFactory.createServer(listenIp, port, iface, payloadProtocol);
 		if (maybeServer.isEmpty()) {
 			return 1;
 		}

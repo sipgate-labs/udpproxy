@@ -1,6 +1,6 @@
 package com.sipgate.udpproxy.udp;
 
-import com.sipgate.udpproxy.udp.payload.Protocol;
+import com.sipgate.udpproxy.udp.payload.PayloadProtocol;
 
 import java.net.*;
 import java.util.Optional;
@@ -10,13 +10,13 @@ public final class ServerFactory {
 	private ServerFactory() {
 	}
 
-	public static Optional<ProxyServer> createServer(final String ip, final int port, final String device, final Protocol protocol) {
+	public static Optional<ProxyServer> createServer(final String ip, final int port, final String device, final PayloadProtocol payloadProtocol) {
 
 		try {
 			return Optional.of(new ProxyServer(
 					new DatagramSocket(getSocketAddress(ip, port, device)),
 					4096,
-					protocol
+					payloadProtocol
 			));
 		} catch (final SocketException e) {
 			System.err.println("Cannot create server: " + e.getMessage());

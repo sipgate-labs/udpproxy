@@ -1,5 +1,5 @@
 package com.sipgate.udpproxy.udp.payload;
 
-public enum Protocol {
+public enum PayloadProtocol {
 	SIP
 }

@@ -1,6 +1,6 @@
 package com.sipgate.udpproxy.udp;
 
-import com.sipgate.udpproxy.udp.payload.Protocol;
+import com.sipgate.udpproxy.udp.payload.PayloadProtocol;
 import com.sipgate.udpproxy.udp.payload.ProxyTargetResolver;
 import com.sipgate.udpproxy.udp.payload.sip.SipTargetResolver;
 
@@ -20,20 +20,20 @@ public class ProxyServer implements Runnable {
 	private final ExecutorService executorService = Executors.newFixedThreadPool(1000);
 	private final Map<String, Dialog> dialogs = new HashMap<>();
 	private final ProxyTargetResolver targetResolver;
-	private final Protocol protocol;
+	private final PayloadProtocol payloadProtocol;
 
 	private boolean running = true;
 
-	public ProxyServer(final DatagramSocket serverSocket, final int bufferSize, final Protocol protocol) {
+	public ProxyServer(final DatagramSocket serverSocket, final int bufferSize, final PayloadProtocol payloadProtocol) {
 		this.serverSocket = serverSocket;
 		this.bufferSize = bufferSize;
-		this.protocol = protocol;
-		switch (protocol) {
+		this.payloadProtocol = payloadProtocol;
+		switch (payloadProtocol) {
 			case SIP:
 				this.targetResolver = new SipTargetResolver();
 				break;
 			default:
-				throw new IllegalArgumentException("Unsupported protocol: " + protocol);
+				throw new IllegalArgumentException("Unsupported protocol: " + payloadProtocol);
 		}
 	}
 
@@ -51,7 +51,7 @@ public class ProxyServer implements Runnable {
 				// Create dialog if not exists and listen for traffic from proxy target
 				final var dialogKey = getDialogKey(fromClient);
 				final var dialog = dialogs.computeIfAbsent(dialogKey, key -> {
-					final var newDialog = Dialog.create(serverSocket, bufferSize, fromClient, protocol);
+					final var newDialog = Dialog.create(serverSocket, bufferSize, fromClient, payloadProtocol);
 					executorService.submit(newDialog);
 					return newDialog;
 				});
