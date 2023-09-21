@@ -1,7 +1,7 @@
-package com.sipgate.udpproxy.protocol.gtpv2.ie;
+package com.sipgate.udpproxy.udp.payload.gtpv2.ie;
 
-import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.BitHelper;
-import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.MncMcc;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder.BitHelper;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder.MncMcc;
 
 import java.util.Optional;
 

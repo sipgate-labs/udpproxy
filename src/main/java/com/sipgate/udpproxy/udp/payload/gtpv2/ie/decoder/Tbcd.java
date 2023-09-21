@@ -1,4 +1,4 @@
-package com.sipgate.udpproxy.protocol.gtpv2.ie.decoder;
+package com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder;
 
 /**
  * Decodes TBCD encoded byte arrays. In those arrays, numbers are encoded in 4 bit chunks, with the most significant

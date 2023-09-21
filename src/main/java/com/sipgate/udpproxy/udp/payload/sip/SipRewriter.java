@@ -1,6 +1,6 @@
-package com.sipgate.udpproxy.protocol.sip;
+package com.sipgate.udpproxy.udp.payload.sip;
 
-import com.sipgate.udpproxy.protocol.PacketRewriter;
+import com.sipgate.udpproxy.udp.payload.PacketRewriter;
 import java.net.DatagramPacket;
 
 public class SipRewriter implements PacketRewriter {

@@ -1,6 +1,6 @@
 package com.sipgate.udpproxy.udp;
 
-import com.sipgate.udpproxy.protocol.Protocol;
+import com.sipgate.udpproxy.udp.payload.Protocol;
 
 import java.net.*;
 import java.util.Optional;

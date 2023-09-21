@@ -1,6 +1,6 @@
 package com.sipgate.udpproxy;
 
-import com.sipgate.udpproxy.protocol.gtpv2.GTPv2Payload;
+import com.sipgate.udpproxy.udp.payload.gtpv2.GTPv2Payload;
 
 public class Application {
 

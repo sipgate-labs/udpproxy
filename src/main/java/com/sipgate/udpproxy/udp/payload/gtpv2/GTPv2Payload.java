@@ -1,7 +1,7 @@
-package com.sipgate.udpproxy.protocol.gtpv2;
+package com.sipgate.udpproxy.udp.payload.gtpv2;
 
-import com.sipgate.udpproxy.protocol.gtpv2.ie.InformationElement;
-import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.BitHelper;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.InformationElement;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder.BitHelper;
 
 import java.util.List;
 

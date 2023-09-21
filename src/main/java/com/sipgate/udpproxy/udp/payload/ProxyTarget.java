@@ -1,4 +1,4 @@
-package com.sipgate.udpproxy.protocol;
+package com.sipgate.udpproxy.udp.payload;
 
 /**
  * Represents a target to which the proxy forwards the packets.

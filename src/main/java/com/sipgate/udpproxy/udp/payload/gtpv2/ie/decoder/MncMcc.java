@@ -1,6 +1,4 @@
-package com.sipgate.udpproxy.protocol.gtpv2.ie.decoder;
-
-import java.nio.ByteBuffer;
+package com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder;
 
 /**
  * Decodes MncMcc from a byte array.

@@ -1,6 +1,6 @@
 package com.sipgate.udpproxy;
 
-import com.sipgate.udpproxy.protocol.Protocol;
+import com.sipgate.udpproxy.udp.payload.Protocol;
 import com.sipgate.udpproxy.udp.ProxyServer;
 import com.sipgate.udpproxy.udp.ServerFactory;
 import picocli.CommandLine.Command;

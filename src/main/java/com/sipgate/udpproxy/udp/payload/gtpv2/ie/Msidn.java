@@ -1,6 +1,6 @@
-package com.sipgate.udpproxy.protocol.gtpv2.ie;
+package com.sipgate.udpproxy.udp.payload.gtpv2.ie;
 
-import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.Tbcd;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder.Tbcd;
 
 public class Msidn extends InformationElement {
 

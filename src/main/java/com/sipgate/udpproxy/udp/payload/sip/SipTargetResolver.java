@@ -1,7 +1,7 @@
-package com.sipgate.udpproxy.protocol.sip;
+package com.sipgate.udpproxy.udp.payload.sip;
 
-import com.sipgate.udpproxy.protocol.ProxyTarget;
-import com.sipgate.udpproxy.protocol.ProxyTargetResolver;
+import com.sipgate.udpproxy.udp.payload.ProxyTarget;
+import com.sipgate.udpproxy.udp.payload.ProxyTargetResolver;
 
 import java.net.DatagramPacket;
 

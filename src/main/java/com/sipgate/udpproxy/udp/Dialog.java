@@ -1,8 +1,8 @@
 package com.sipgate.udpproxy.udp;
 
-import com.sipgate.udpproxy.protocol.PacketRewriter;
-import com.sipgate.udpproxy.protocol.Protocol;
-import com.sipgate.udpproxy.protocol.sip.SipRewriter;
+import com.sipgate.udpproxy.udp.payload.PacketRewriter;
+import com.sipgate.udpproxy.udp.payload.Protocol;
+import com.sipgate.udpproxy.udp.payload.sip.SipRewriter;
 
 import java.io.IOException;
 import java.net.*;

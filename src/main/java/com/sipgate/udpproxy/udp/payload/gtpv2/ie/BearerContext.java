@@ -1,4 +1,4 @@
-package com.sipgate.udpproxy.protocol.gtpv2.ie;
+package com.sipgate.udpproxy.udp.payload.gtpv2.ie;
 
 public class BearerContext extends GroupedIe{
 
