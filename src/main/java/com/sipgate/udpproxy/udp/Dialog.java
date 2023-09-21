@@ -1,10 +1,12 @@
 package com.sipgate.udpproxy.udp;
 
 import com.sipgate.udpproxy.protocol.PacketRewriter;
+import com.sipgate.udpproxy.protocol.Protocol;
 import com.sipgate.udpproxy.protocol.sip.SipRewriter;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.function.Supplier;
 
 /**
  * A dialog represents a communication between a client and a proxy target.
@@ -36,10 +38,17 @@ public class Dialog implements Runnable {
 		}
 	}
 
-	public static Dialog create(final DatagramSocket proxySource, final int bufferSize, final DatagramPacket clientPacket) {
+	public static Dialog create(final DatagramSocket proxySource, final int bufferSize, final DatagramPacket clientPacket, final Protocol protocol) {
+		final Supplier<PacketRewriter>  rewriter = () -> {
+			switch (protocol) {
+				case SIP:
+					return new SipRewriter();
+				default:
+					throw new IllegalArgumentException("Unsupported protocol: " + protocol);
+			}
+		};
 		try {
-			// FIXME: hardcoded rewriter
-			return new Dialog(proxySource, new DatagramSocket(), bufferSize, new SipRewriter(), clientPacket.getAddress(), clientPacket.getPort());
+			return new Dialog(proxySource, new DatagramSocket(), bufferSize, rewriter.get(), clientPacket.getAddress(), clientPacket.getPort());
 		} catch (final SocketException e) {
 			System.err.println("Error while creating client socket: " + e.getMessage());
 			throw new RuntimeException(e);
