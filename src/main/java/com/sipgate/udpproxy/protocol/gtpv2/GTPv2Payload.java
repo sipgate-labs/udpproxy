@@ -1,8 +1,10 @@
 package com.sipgate.udpproxy.protocol.gtpv2;
 
 import com.sipgate.udpproxy.protocol.gtpv2.ie.InformationElement;
+import com.sipgate.udpproxy.protocol.gtpv2.ie.decoder.BitHelper;
 
 import java.util.List;
+
 
 public class GTPv2Payload {
 
@@ -25,24 +27,24 @@ public class GTPv2Payload {
 		this.payload = payload;
 
 		this.version = (payload[0] & 0b11100000) >>> 5;
-		this.piggybackingFlagSet = (payload[0] & 0b00010000) != 0;
-		this.teidFlagSet = (payload[0] & 0b00001000) != 0;
-		this.messagePriorityFlagSet = (payload[0] & 0b00000100) != 0;
+		this.piggybackingFlagSet = BitHelper.isBitSet(payload[0], 5);
+		this.teidFlagSet = BitHelper.isBitSet(payload[0], 4);
+		this.messagePriorityFlagSet = BitHelper.isBitSet(payload[0], 3);
 		this.messageType = getMessageType(payload[1]);
-		this.messageLength = ((payload[2] & 0xff) << 8) | (payload[3] & 0xff);
+		this.messageLength = BitHelper.int16ToInt32(payload[2], payload[3]);
 
 		final var offsetSequenceNumber = teidFlagSet ? 8 : 4;
 		final var offsetSpare = teidFlagSet ? 11 : 7;
 
 		if (teidFlagSet) {
-			this.tunnelEndpointIdentifier = ((payload[4] & 0xff) << 24) | ((payload[5] & 0xff) << 16) | ((payload[6] & 0xff) << 8) | payload[7] & 0xff;
+			this.tunnelEndpointIdentifier = BitHelper.toInt32(payload[4], payload[5], payload[6], payload[7]);
 		}
-		this.sequenceNumber = ((payload[offsetSequenceNumber] & 0xff) << 16) | ((payload[offsetSequenceNumber + 1] & 0xff) << 8) | payload[offsetSequenceNumber + 2] & 0xff;
+		this.sequenceNumber = BitHelper.int24ToInt32(payload[offsetSequenceNumber], payload[offsetSequenceNumber + 1], payload[offsetSequenceNumber + 2]);
 		this.spare = payload[offsetSpare];
 		this.informationElements = InformationElement.fromBytes(payload, offsetSpare + 1);
 	}
 
-	public byte[] toBytes() {
+	public byte[] getPayload() {
 		return payload;
 	}
 
