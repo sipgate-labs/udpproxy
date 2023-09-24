@@ -80,12 +80,16 @@ public class InformationElement {
 		switch (type) {
 			case 0x01:
 				return new Imsi(type, spare, instance, payload);
+			case 0x02:
+				return new Cause(type, spare, instance, payload);
 			case 0x03:
 				return new RestartCounter(type, spare, instance, payload);
 			case 0x47:
 				return new AccessPointName(type, spare, instance, payload);
 			case 0x48:
 				return new AggregateMaximumBitRate(type, spare, instance, payload);
+			case 0x49:
+				return new EpsBearerId(type, spare, instance, payload);
 			case 0x4b:
 				return new MobileEquipmentIdentity(type, spare, instance, payload);
 			case 0x4c:
