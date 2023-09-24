@@ -82,14 +82,34 @@ public class InformationElement {
 				return new Imsi(type, spare, instance, payload);
 			case 0x03:
 				return new RestartCounter(type, spare, instance, payload);
+			case 0x47:
+				return new AccessPointName(type, spare, instance, payload);
+			case 0x48:
+				return new AggregateMaximumBitRate(type, spare, instance, payload);
 			case 0x4b:
 				return new MobileEquipmentIdentity(type, spare, instance, payload);
 			case 0x4c:
 				return new Msidn(type, spare, instance, payload);
+			case 0x4d:
+				return new Indication(type, spare, instance, payload);
+			case 0x4f:
+				return new PdnAddressAllocation(type, spare, instance, payload);
+			case 0x52:
+				return new RatType(type, spare, instance, payload);
+			case 0x53:
+				return new ServingNetwork(type, spare, instance, payload);
 			case 0x56:
 				return new UserLocationInformation(type, spare, instance, payload);
+			case 0x57:
+				return new FullyQualifiedTunnelEndpointIdentifier(type, spare, instance, payload);
 			case 0x5d:
 				return new BearerContext(type, spare, instance, payload);
+			case 0x63:
+				return new PdnType(type, spare, instance, payload);
+			case 0x7f:
+				return new ApnRestriction(type, spare, instance, payload);
+			case (byte) 0x80:
+				return new SelectionMode(type, spare, instance, payload);
 			default:
 				return new InformationElement(type, spare, instance, payload);
 		}
