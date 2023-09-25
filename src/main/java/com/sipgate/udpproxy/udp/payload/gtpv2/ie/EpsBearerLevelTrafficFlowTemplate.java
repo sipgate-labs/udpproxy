@@ -1,7 +1,10 @@
 package com.sipgate.udpproxy.udp.payload.gtpv2.ie;
 
 import com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder.BitHelper;
-import com.sipgate.udpproxy.udp.payload.gtpv2.ie.decoder.IpV4V6;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.tft.GenericPacketFilterComponent;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 	public EpsBearerLevelTrafficFlowTemplate(final byte type, final byte spare, final byte instance, final byte[] payload) {
@@ -33,6 +36,28 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 		payload[0] = BitHelper.setBitTo(payload[0], 3, BitHelper.isBitSet((byte) numberOfPacketFilters, 3));
 		payload[0] = BitHelper.setBitTo(payload[0], 4, BitHelper.isBitSet((byte) numberOfPacketFilters, 4));
 		return this;
+	}
+
+	public List<PacketFilter> getPacketFilters() {
+		final var packetFilters = new ArrayList<PacketFilter>();
+		int offset = 1;
+		for (int i = 0; i < getNumberOfPacketFilters(); i++) {
+			final byte[] packetFilterRaw = new byte[payload[offset + 2] + 3];
+			System.arraycopy(payload, offset, packetFilterRaw, 0, packetFilterRaw.length);
+			final var packetFilter = new PacketFilter(packetFilterRaw);
+			packetFilters.add(packetFilter);
+			offset += packetFilter.getPacketFilterLength() + 3;
+		}
+		return packetFilters;
+	}
+
+	@Override
+	public String toString() {
+		return "EpsBearerLevelTrafficFlowTemplate{" +
+				"tftOperationCode=" + getTftOperationCodeEnum() +
+				", numberOfPacketFilters=" + getNumberOfPacketFilters() +
+				", packetFilters=" + getPacketFilters() +
+				'}';
 	}
 
 	public enum TftOperationCode {
@@ -118,91 +143,41 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 			return this;
 		}
 
-		public PacketFilterComponentType getPacketFilterComponentType() {
-			return PacketFilterComponentType.fromCode(BitHelper.toInt(payload[3]));
-		}
-
-		public PacketFilter setPacketFilterComponentType(final PacketFilterComponentType packetFilterComponentType) {
-			payload[3] = (byte) packetFilterComponentType.getCode();
-			// TODO: set length and re-init payload array based on length
-			return this;
-		}
-
-		public String getIpv4RemoteAddress() {
-			if (getPacketFilterComponentType() != PacketFilterComponentType.IPV4_REMOTE_ADDRESS) {
-				throw new IllegalStateException("Packet filter component type is not IPV4_REMOTE_ADDRESS");
-			}
-
-			final byte[] ipv4Address = new byte[4];
-			System.arraycopy(payload, 4, ipv4Address, 0, 4);
-
-			return IpV4V6.decodeV4(ipv4Address);
-		}
-
-		public String getIpv4RemoteAddressMask() {
-			if (getPacketFilterComponentType() != PacketFilterComponentType.IPV4_REMOTE_ADDRESS) {
-				throw new IllegalStateException("Packet filter component type is not IPV4_REMOTE_ADDRESS");
-			}
-
-			final byte[] ipv4AddressMask = new byte[4];
-			System.arraycopy(payload, 8, ipv4AddressMask, 0, 4);
-
-			return IpV4V6.decodeV4(ipv4AddressMask);
-		}
-
-		public PacketFilter setIpv4RemoteAddress(final String ipv4RemoteAddress) {
-			if (getPacketFilterComponentType() != PacketFilterComponentType.IPV4_REMOTE_ADDRESS) {
-				throw new IllegalStateException("Packet filter component type is not IPV4_REMOTE_ADDRESS");
-			}
-
-			final byte[] ipv4Address = IpV4V6.encodeV4(ipv4RemoteAddress);
-			System.arraycopy(ipv4Address, 0, payload, 4, 4);
-
-			return this;
-		}
-
-		public enum PacketFilterComponentType {
-			IPV4_REMOTE_ADDRESS(16),
-			IPV4_LOCAL_ADDRESS(17),
-			IPV6_REMOTE_ADDRESS(32),
-			IPV6_REMOTE_ADDRESS_PREFIX_LENGTH(33),
-			IPV6_LOCAL_ADDRESS_PREFIX_LENGTH(35),
-			PROTOCOL_IDENTIFIER_NEXT_HEADER(48),
-			SINGLE_LOCAL_PORT(64),
-			LOCAL_PORT_RANGE(65),
-			SINGLE_REMOTE_PORT(80),
-			REMOTE_PORT_RANGE(81),
-			SECURITY_PARAMETER_INDEX(96),
-			TYPE_OF_SERVICE_TRAFFIC_CLASS(112),
-			FLOW_LABEL(128),
-			DESTINATION_MAC_ADDRESS(129),
-			SOURCE_MAC_ADDRESS(130),
-			IEE_802_1Q_C_TAG_VID(131),
-			IEE_802_1Q_S_TAG_VID(132),
-			IEE_802_1Q_C_TAG_PCP(133),
-			IEE_802_1Q_S_TAG_PCP(134),
-			ETHERTYPE(135),
-			;
-
-			private final int code;
-
-			PacketFilterComponentType(final int code) {
-				this.code = code;
-			}
-
-			public int getCode() {
-				return code;
-			}
-
-			public static PacketFilterComponentType fromCode(final int code) {
-				for (final var packetFilterComponentType : values()) {
-					if (packetFilterComponentType.getCode() == code) {
-						return packetFilterComponentType;
-					}
+		public List<GenericPacketFilterComponent> getPacketFilterComponents() {
+			final var components = new ArrayList<GenericPacketFilterComponent>();
+			int offset = 3;
+			while (offset < payload.length) {
+				final var componentType = GenericPacketFilterComponent.PacketFilterComponentType.fromCode(payload[offset]);
+				if (componentType == null) {
+					throw new IllegalArgumentException("Unknown packet filter component type: " + payload[offset]);
 				}
-				return null;
+				final var componentLength = componentType.getValueLength() + 1;
+				final var componentPayload = new byte[componentLength];
+				try {
+					System.arraycopy(payload, offset, componentPayload, 0, componentLength);
+				} catch (final ArrayIndexOutOfBoundsException e) {
+					throw new IllegalArgumentException("Packet filter component length is invalid! Indicated length: " + componentLength + ", actual length: " + (payload.length - offset));
+				}
+				System.arraycopy(payload, offset, componentPayload, 0, componentLength);
+				final var component = GenericPacketFilterComponent.fromBytes(componentPayload);
+				components.add(component);
+				offset += componentLength;
 			}
+
+			return components;
 		}
+
+		@Override
+		public String toString() {
+			return "PacketFilter{" +
+					"packetFilterIdentifier=" + getPacketFilterIdentifier() +
+					", packetFilterDirection=" + getPacketFilterDirection() +
+					", packetFilterEvaluationPrecedence=" + getPacketFilterEvaluationPrecedence() +
+					", packetFilterLength=" + getPacketFilterLength() +
+					", packetFilterComponents=" + getPacketFilterComponents() +
+					'}';
+		}
+
 	}
 
 }
