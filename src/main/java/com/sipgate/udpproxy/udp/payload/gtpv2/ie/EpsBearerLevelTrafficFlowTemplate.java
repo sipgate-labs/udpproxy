@@ -51,6 +51,25 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 		return packetFilters;
 	}
 
+	public EpsBearerLevelTrafficFlowTemplate setPacketFilters(final List<PacketFilter> packetFilters) {
+		final var packetFilterBytes = new ArrayList<byte[]>();
+		for (final var packetFilter : packetFilters) {
+			packetFilterBytes.add(packetFilter.toPackBytes());
+		}
+		final int newLength = packetFilterBytes.stream().mapToInt(b -> b.length).sum();
+		final var newPayload = new byte[1 + newLength];
+		newPayload[0] = payload[0];
+
+		int offset = 1;
+		for (final var packetFilter : packetFilterBytes) {
+			System.arraycopy(packetFilter, 0, newPayload, offset, packetFilter.length);
+			offset += packetFilter.length;
+		}
+
+		this.payload = newPayload;
+		return this;
+	}
+
 	@Override
 	public String toString() {
 		return "EpsBearerLevelTrafficFlowTemplate{" +
@@ -90,12 +109,12 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 		}
 	}
 
-	public class PacketFilter {
+	public static class PacketFilter implements PackableToBytes {
 		public static final int FILTER_DIRECTION_DOWNLINK_ONLY = 1;
 		public static final int FILTER_DIRECTION_UPLINK_ONLY = 2;
 		public static final int FILTER_DIRECTION_BIDIRECTIONAL = 3;
 
-		private final byte[] payload;
+		private byte[] payload;
 
 
 		public PacketFilter(final byte[] payload) {
@@ -153,11 +172,8 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 				}
 				final var componentLength = componentType.getValueLength() + 1;
 				final var componentPayload = new byte[componentLength];
-				try {
-					System.arraycopy(payload, offset, componentPayload, 0, componentLength);
-				} catch (final ArrayIndexOutOfBoundsException e) {
-					throw new IllegalArgumentException("Packet filter component length is invalid! Indicated length: " + componentLength + ", actual length: " + (payload.length - offset));
-				}
+				System.arraycopy(payload, offset, componentPayload, 0, componentLength);
+
 				System.arraycopy(payload, offset, componentPayload, 0, componentLength);
 				final var component = GenericPacketFilterComponent.fromBytes(componentPayload);
 				components.add(component);
@@ -165,6 +181,32 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 			}
 
 			return components;
+		}
+
+		public PacketFilter setPacketFilterComponents(List<GenericPacketFilterComponent> components) {
+			final var componentBytes = new ArrayList<byte[]>();
+			for (final var component : components) {
+				componentBytes.add(component.toPackBytes());
+			}
+			final int newLength = componentBytes.stream().mapToInt(b -> b.length).sum();
+			final var newPayload = new byte[3 + newLength];
+			newPayload[0] = payload[0];
+			newPayload[1] = payload[1];
+			newPayload[2] = (byte) newLength;
+
+			int offset = 3;
+			for (final var component : componentBytes) {
+				System.arraycopy(component, 0, newPayload, offset, component.length);
+				offset += component.length;
+			}
+
+			this.payload = newPayload;
+			return this;
+		}
+
+		@Override
+		public byte[] toPackBytes() {
+			return this.payload;
 		}
 
 		@Override

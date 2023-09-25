@@ -3,7 +3,7 @@ package com.sipgate.udpproxy.udp.payload.gtpv2.ie;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InformationElement {
+public class InformationElement implements PackableToBytes {
 
 	private byte type;
 	private short length;
@@ -35,6 +35,21 @@ public class InformationElement {
 		return instance;
 	}
 
+	@Override
+	public byte[] toPackBytes() {
+		final byte[] header = new byte[4];
+		header[0] = type;
+		header[1] = (byte) ((payload.length >> 8) & 0xff);
+		header[2] = (byte) (payload.length & 0xff);
+		header[3] = (byte) ((spare << 4) | instance & 0xff);
+
+		final byte[] packed = new byte[header.length + payload.length];
+		System.arraycopy(header, 0, packed, 0, header.length);
+		System.arraycopy(payload, 0, packed, header.length, payload.length);
+		return packed;
+	}
+
+	@Override
 	public String toString() {
 		final var payloadSb = new StringBuilder();
 		for (final var b : payload) {
@@ -120,6 +135,4 @@ public class InformationElement {
 				return new InformationElement(type, spare, instance, payload);
 		}
 	}
-
-
 }

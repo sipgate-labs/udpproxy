@@ -7,6 +7,11 @@ public class IPv4AddressComponent extends GenericPacketFilterComponent {
 		super(payload);
 	}
 
+	public IPv4AddressComponent() {
+		super(new byte[8 + 8 + 1]); // Address and mask + type
+		setPacketFilterComponentType(PacketFilterComponentType.IPV4_REMOTE_ADDRESS);
+	}
+
 	public IPv4AddressComponent setPacketFilterComponentType(final PacketFilterComponentType packetFilterComponentType) {
 		if (PacketFilterComponentType.IPV4_REMOTE_ADDRESS != packetFilterComponentType
 				&& PacketFilterComponentType.IPV4_LOCAL_ADDRESS != packetFilterComponentType) {

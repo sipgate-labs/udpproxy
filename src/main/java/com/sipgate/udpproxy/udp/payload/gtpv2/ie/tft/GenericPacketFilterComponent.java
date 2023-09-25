@@ -1,18 +1,60 @@
 package com.sipgate.udpproxy.udp.payload.gtpv2.ie.tft;
 
-public class GenericPacketFilterComponent {
-	protected final byte[] payload;
+import com.sipgate.udpproxy.udp.payload.gtpv2.ie.PackableToBytes;
+
+public class GenericPacketFilterComponent implements PackableToBytes {
+	protected byte[] payload;
 
 	public GenericPacketFilterComponent(final byte[] payload) {
 		this.payload = payload;
 	}
 
-	public byte[] getPayload() {
-		return payload;
+	public static GenericPacketFilterComponent fromBytes(final byte[] rawBytes) {
+		final var packetFilterComponentType = PacketFilterComponentType.fromCode(rawBytes[0]);
+		if (packetFilterComponentType == null) {
+			throw new IllegalArgumentException("Unknown packet filter component type: " + rawBytes[0]);
+		}
+
+		switch (packetFilterComponentType) {
+			case IPV4_REMOTE_ADDRESS, IPV4_LOCAL_ADDRESS:
+				return new IPv4AddressComponent(rawBytes);
+			case IPV6_REMOTE_ADDRESS:
+				return new IPv6AddressComponent(rawBytes);
+			case IPV6_REMOTE_ADDRESS_PREFIX_LENGTH, IPV6_LOCAL_ADDRESS_PREFIX_LENGTH:
+				return new IPv6AddressPrefixComponent(rawBytes);
+			default:
+				return new GenericPacketFilterComponent(rawBytes);
+		}
 	}
 
 	public PacketFilterComponentType getPacketFilterComponentType() {
 		return PacketFilterComponentType.fromCode(payload[0]);
+	}
+
+	public GenericPacketFilterComponent setPacketFilterComponentType(final PacketFilterComponentType type) {
+		this.payload = new byte[type.length + 1];
+		this.payload[0] = (byte) type.code;
+		return this;
+	}
+
+	public GenericPacketFilterComponent setPacketFilterBytes(final byte[] bytes) {
+		if (bytes.length != getPacketFilterComponentType().length) {
+			throw new IllegalArgumentException("Invalid length for packet filter component type " + getPacketFilterComponentType() + ": " + bytes.length);
+		}
+		System.arraycopy(bytes, 0, payload, 1, bytes.length);
+		return this;
+	}
+
+	@Override
+	public byte[] toPackBytes() {
+		return payload;
+	}
+
+	@Override
+	public String toString() {
+		return "GenericPacketFilterComponent{" +
+				"packetFilterComponentType=" + getPacketFilterComponentType() +
+				'}';
 	}
 
 	public enum PacketFilterComponentType {
@@ -62,30 +104,5 @@ public class GenericPacketFilterComponent {
 			}
 			return null;
 		}
-	}
-
-	public static GenericPacketFilterComponent fromBytes(final byte[] rawBytes) {
-		final var packetFilterComponentType = PacketFilterComponentType.fromCode(rawBytes[0]);
-		if (packetFilterComponentType == null) {
-			throw new IllegalArgumentException("Unknown packet filter component type: " + rawBytes[0]);
-		}
-
-		switch (packetFilterComponentType) {
-			case IPV4_REMOTE_ADDRESS, IPV4_LOCAL_ADDRESS:
-				return new IPv4AddressComponent(rawBytes);
-			case IPV6_REMOTE_ADDRESS:
-				return new IPv6AddressComponent(rawBytes);
-			case IPV6_REMOTE_ADDRESS_PREFIX_LENGTH, IPV6_LOCAL_ADDRESS_PREFIX_LENGTH:
-				return new IPv6AddressPrefixComponent(rawBytes);
-			default:
-				return new GenericPacketFilterComponent(rawBytes);
-		}
-	}
-
-	@Override
-	public String toString() {
-		return "GenericPacketFilterComponent{" +
-				"packetFilterComponentType=" + getPacketFilterComponentType() +
-				'}';
 	}
 }

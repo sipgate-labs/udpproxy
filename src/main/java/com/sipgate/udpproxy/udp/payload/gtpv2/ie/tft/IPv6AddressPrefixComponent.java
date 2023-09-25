@@ -7,6 +7,11 @@ public class IPv6AddressPrefixComponent extends GenericPacketFilterComponent {
 		super(payload);
 	}
 
+	public IPv6AddressPrefixComponent() {
+		super(new byte[16 + 1 + 1]); // Address and prefix length + type
+		setPacketFilterComponentType(PacketFilterComponentType.IPV6_REMOTE_ADDRESS_PREFIX_LENGTH);
+	}
+
 	public String getIpV6Address() {
 		final byte[] ipv6Address = new byte[16];
 		System.arraycopy(payload, 1, ipv6Address, 0, 16);

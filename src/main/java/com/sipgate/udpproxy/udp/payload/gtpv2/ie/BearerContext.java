@@ -9,7 +9,7 @@ public class BearerContext extends GroupedIe{
 	@Override
 	public String toString() {
 		return "BearerContext{" +
-				"informationElements=" + informationElements +
+				"informationElements=" + getInformationElements() +
 				'}';
 	}
 }

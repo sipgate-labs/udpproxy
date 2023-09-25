@@ -58,6 +58,10 @@ public class GTPv2Payload {
 		return payload;
 	}
 
+	public List<InformationElement> getInformationElements() {
+		return informationElements;
+	}
+
 	public static GTPv2Payload fromBytes(final byte[] bytes) {
 		return new GTPv2Payload(bytes);
 	}

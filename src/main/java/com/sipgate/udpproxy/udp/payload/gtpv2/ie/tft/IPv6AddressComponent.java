@@ -7,6 +7,11 @@ public class IPv6AddressComponent extends GenericPacketFilterComponent {
 		super(payload);
 	}
 
+	public IPv6AddressComponent() {
+		super(new byte[16 + 16 + 1]); // Address and mask + type
+		setPacketFilterComponentType(PacketFilterComponentType.IPV6_REMOTE_ADDRESS);
+	}
+
 	public String getIpV6Address() {
 		final byte[] ipv6Address = new byte[16];
 		System.arraycopy(payload, 1, ipv6Address, 0, 16);
