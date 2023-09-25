@@ -102,6 +102,8 @@ public class InformationElement {
 				return new RatType(type, spare, instance, payload);
 			case 0x53:
 				return new ServingNetwork(type, spare, instance, payload);
+			case 0x54:
+				return new EpsBearerLevelTrafficFlowTemplate(type, spare, instance, payload);
 			case 0x56:
 				return new UserLocationInformation(type, spare, instance, payload);
 			case 0x57:
