@@ -108,7 +108,7 @@ public class InformationElement implements PackableToBytes {
 			case 0x4b:
 				return new MobileEquipmentIdentity(type, spare, instance, payload);
 			case 0x4c:
-				return new Msidn(type, spare, instance, payload);
+				return new Msisdn(type, spare, instance, payload);
 			case 0x4d:
 				return new Indication(type, spare, instance, payload);
 			case 0x4f:
