@@ -16,9 +16,7 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 	}
 
 	public EpsBearerLevelTrafficFlowTemplate setTftOperationCode(final int tftOperationCode) {
-		payload[0] = BitHelper.setBitTo(payload[0], 6, BitHelper.isBitSet((byte) tftOperationCode, 6));
-		payload[0] = BitHelper.setBitTo(payload[0], 7, BitHelper.isBitSet((byte) tftOperationCode, 7));
-		payload[0] = BitHelper.setBitTo(payload[0], 8, BitHelper.isBitSet((byte) tftOperationCode, 8));
+		payload[0] = BitHelper.setThreeBitInt(tftOperationCode, 6, 8, payload[0]);
 		return this;
 	}
 
@@ -31,10 +29,16 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 	}
 
 	public EpsBearerLevelTrafficFlowTemplate setNumberOfPacketFilters(final int numberOfPacketFilters) {
-		payload[0] = BitHelper.setBitTo(payload[0], 1, BitHelper.isBitSet((byte) numberOfPacketFilters, 1));
-		payload[0] = BitHelper.setBitTo(payload[0], 2, BitHelper.isBitSet((byte) numberOfPacketFilters, 2));
-		payload[0] = BitHelper.setBitTo(payload[0], 3, BitHelper.isBitSet((byte) numberOfPacketFilters, 3));
-		payload[0] = BitHelper.setBitTo(payload[0], 4, BitHelper.isBitSet((byte) numberOfPacketFilters, 4));
+		payload[0] = BitHelper.setLowerNibble(numberOfPacketFilters, payload[0]);
+		return this;
+	}
+
+	public boolean isExtensionBitSet() {
+		return BitHelper.isBitSet(payload[0], 5);
+	}
+
+	public EpsBearerLevelTrafficFlowTemplate setExtensionBit(final boolean extensionBit) {
+		payload[0] = BitHelper.setBitTo(payload[0], 5, extensionBit);
 		return this;
 	}
 
@@ -58,7 +62,7 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 		}
 		final int newLength = packetFilterBytes.stream().mapToInt(b -> b.length).sum();
 		final var newPayload = new byte[1 + newLength];
-		newPayload[0] = payload[0];
+		newPayload[0] = payload[0]; // TFT operation code, E-Bit and number of packet filters
 
 		int offset = 1;
 		for (final var packetFilter : packetFilterBytes) {
@@ -67,7 +71,7 @@ public class EpsBearerLevelTrafficFlowTemplate extends InformationElement {
 		}
 
 		this.payload = newPayload;
-		return this;
+		return setNumberOfPacketFilters(packetFilters.size()); // Update num of packet filters
 	}
 
 	@Override

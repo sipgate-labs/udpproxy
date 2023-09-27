@@ -74,6 +74,48 @@ public class BitHelper {
 	}
 
 	/**
+	 * Sets the lower nibble of a byte to a given 4 bit integer.
+	 *
+	 * @param fourBitInt The 4 bit integer to set the lower nibble to (0-15)
+	 * @param b The byte to set the lower nibble in
+	 * @return The modified byte with the lower nibble set
+	 */
+	public static byte setLowerNibble(final int fourBitInt, final byte b) {
+		if (fourBitInt > 0b1111) {
+			throw new IllegalArgumentException("fourBitInt must be between 0 and 15");
+		}
+
+		return (byte) ((b & 0b11110000) | (fourBitInt & 0b00001111));
+	}
+
+	/**
+	 * Sets the upper nibble of a byte to a given 4 bit integer.
+	 *
+	 * @param fourBitInt The 4 bit integer to set the upper nibble to (0-15)
+	 * @param b The byte to set the upper nibble in
+	 * @return The modified byte with the upper nibble set
+	 */
+	public static byte setUpperNibble(final int fourBitInt, final byte b) {
+		if (fourBitInt > 0b1111) {
+			throw new IllegalArgumentException("fourBitInt must be between 0 and 15");
+		}
+
+		return (byte) ((b & 0b00001111) | (fourBitInt << 4));
+	}
+
+	public static byte setThreeBitInt(final int threeBitInt, final int lowestOrderBit, final int highestOrderBit, final byte b) {
+		if (threeBitInt > 0b111) {
+			throw new IllegalArgumentException("threeBitInt must be between 0 and 7");
+		}
+
+		byte mask = 0b00000000;
+		for (int i = highestOrderBit; i >= lowestOrderBit; i--) {
+			mask = setBit(mask, i);
+		}
+		return (byte) ((b & ~mask) | (threeBitInt << lowestOrderBit - 1));
+	}
+
+	/**
 	 * Returns just the upper nibble of a byte.
 	 * @param b The byte to get the upper nibble from
 	 * @return The upper nibble
