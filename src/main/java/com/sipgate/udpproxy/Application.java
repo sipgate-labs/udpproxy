@@ -1,10 +1,6 @@
 package com.sipgate.udpproxy;
 
-import com.sipgate.udpproxy.udp.payload.gtpv2.GTPv2Payload;
-import com.sipgate.udpproxy.udp.payload.gtpv2.ie.BearerContext;
-import com.sipgate.udpproxy.udp.payload.gtpv2.ie.EpsBearerLevelTrafficFlowTemplate;
-import com.sipgate.udpproxy.udp.payload.gtpv2.ie.InformationElement;
-import com.sipgate.udpproxy.udp.payload.gtpv2.ie.tft.IPv6AddressComponent;
+import com.sipgate.udpproxy.udp.proxy.processors.gtpv2.ie.decoder.Apn;
 
 public class Application {
 
@@ -59,30 +55,7 @@ public class Application {
 				(byte) 0x04,(byte) 0x00,(byte) 0x39,(byte) 0xaf,(byte) 0x26,(byte) 0x1e
 		};
 
-		final var gtpv2 = GTPv2Payload.fromBytes(createBearerRequest);
-
-		final BearerContext bc = (BearerContext) gtpv2.getInformationElements().stream().filter(BearerContext.class::isInstance).findFirst().get();
-		bc.getInformationElements().stream().filter(EpsBearerLevelTrafficFlowTemplate.class::isInstance).forEach(ie -> {
-			final var packetFilters = ((EpsBearerLevelTrafficFlowTemplate) ie).getPacketFilters();
-			final var packetFilterComponents = packetFilters.get(0).getPacketFilterComponents();
-			//packetFilterComponents.set(0, packetFilterComponents.get(0));
-			packetFilterComponents.set(0, new IPv6AddressComponent().setIpV6Mask("ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff").setIpV6Address("fd00:0230:babe:0001:0000:0000:0000:0001"));
-			packetFilters.get(0).setPacketFilterComponents(packetFilterComponents);
-			((EpsBearerLevelTrafficFlowTemplate) ie).setPacketFilters(packetFilters);
-			byte[] raw = InformationElement.fromBytes(ie.toPackBytes()).toPackBytes();
-			final var sb = new StringBuilder();
-			int counter = 0;
-			for (final byte b : raw) {
-				counter++;
-				sb.append(String.format("%02X ", b));
-				if (counter % 16 == 0 && counter != 0) {
-					sb.append("\n");
-				}
-			}
-			System.out.println(sb.toString());
-
-		});
-
+		System.out.println(Apn.encode("sipgate.test.dev"));
 		//System.exit(new CommandLine(new UdpProxyCommand()).execute(args));
 	}
 
